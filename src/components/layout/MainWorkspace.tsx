@@ -5,6 +5,7 @@ import CommandBar from "@/components/interactive/CommandBar";
 import ExecutionGraph from "@/components/interactive/ExecutionGraph";
 import PlanningState from "@/components/interactive/PlanningState";
 import ResultsPanel from "@/components/widgets/ResultsPanel";
+import TopBar from "@/components/layout/TopBar";
 import { Sparkles } from "lucide-react";
 
 function EmptyState() {
@@ -53,6 +54,8 @@ export default function MainWorkspace() {
 
   return (
     <div className="flex flex-col flex-1 min-h-0">
+      {/* Top bar with user avatar */}
+      <TopBar />
       <div className="flex-1 overflow-y-auto px-6 py-6">
         <AnimatePresence mode="wait">
           {showEmpty ? (
