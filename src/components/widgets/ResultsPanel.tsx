@@ -50,7 +50,14 @@ function extractText(result: unknown): string | null {
 function hasChartData(result: unknown): boolean {
   if (!result || typeof result !== "object") return false;
   const r = result as Record<string, unknown>;
-  return !!(r.type || r.chart_type || r.data || r.labels || r.series);
+  // Format 1 — single chart: { spec: { data: [...], layout: {...} }, chart_type: "bar" }
+  if (r.spec && typeof r.spec === "object") {
+    const spec = r.spec as Record<string, unknown>;
+    if (Array.isArray(spec.data)) return true;
+  }
+  // Format 2 — auto-insights: { charts: [{ spec: {...}, chart_type: ... }, ...] }
+  if (Array.isArray(r.charts) && r.charts.length > 0) return true;
+  return false;
 }
 
 function hasTableData(result: unknown): boolean {
@@ -96,7 +103,9 @@ function TaskResultCard({ taskResult }: { taskResult: TaskResult }) {
 
       {taskResult.status === "completed" && (
         <>
-          {showChart && <ChartWidget data={taskResult.result} />}
+          {showChart && (
+            <ChartWidget result={taskResult.result} />
+          )}
           {showTable && <DataTableWidget data={taskResult.result} />}
           {text && !showChart && !showTable && <MarkdownReport content={text} />}
           {!showChart && !showTable && !text && taskResult.result && (
